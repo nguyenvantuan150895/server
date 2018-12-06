@@ -1,5 +1,12 @@
 // Button Go
 $(function () {
+	// search
+	let valueSearch = $("#idValueSearch").attr("valueSearch"); //console.log("arrCamp:", arrCampaign);
+	valueSearch = JSON.parse(valueSearch);
+	// console.log("valueSearch:", valueSearch);
+	$("#inputSearch").val(valueSearch);
+	
+
 	// slide detail
 	$("#mybtn").click(function () {
 		$("#detail").slideToggle("slow");
@@ -9,7 +16,7 @@ $(function () {
 			$("#fa").removeClass("fa fa-angle-double-up").addClass('fa fa-angle-double-down');
 		}
 	});
-
+	
 	//slide reveal
 	$('#slider').slideReveal({
 		trigger: $("#btnShort"),

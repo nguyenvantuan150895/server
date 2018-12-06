@@ -31,6 +31,7 @@ let mapping = (arr) => {
 // Create short Url
 let createShortUrl = (domain1) => {
     let domain = fs.readFileSync('domain.txt', 'utf8');
+    domain = domain.trim();
     // console.log("DOMAIN read:", domain);
     //let domain = "localhost:3000/";
     domain = domain + '/';
@@ -65,6 +66,7 @@ let checkExistForFb = async (arr) => {
 let checkFormatUrlShort = (url, domain1) => {
     // let domain = "localhost:3000/";
     let domain = fs.readFileSync('domain.txt', 'utf8');
+    domain = domain.trim();
     domain = domain + '/';
     const regex = /^[a-zA-Z0-9]*$/;
     let len = domain.length; //console.log("LEN:", len);//ex: doamin: rutgon.ml/ => length 10

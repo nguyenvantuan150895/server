@@ -45,7 +45,7 @@ var authenSession = function (req, res, next) {
         next();
     } else if(url.search("admin") == 1){
         if(req.session.admin) next();
-        else res.render("adminEOS.ejs");
+        else res.render("../d_views/admin/adminEOS.ejs");
     } else if ( url.search("user") == 1) {
         if(req.session.user) next();
         else res.render("../d_views/user/userEOS.ejs");
@@ -57,7 +57,7 @@ var authenSession = function (req, res, next) {
         else res.render("../d_views/user/userEOS.ejs");
     } else next();
   }
-app.use(authenSession);
+// app.use(authenSession);
 
 
 //path redirections
