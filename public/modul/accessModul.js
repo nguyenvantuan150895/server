@@ -13,7 +13,7 @@ const date = () => {
     let ob_time = {date: date, hour: hour};//console.log("ob_time:", ob_time);
     return ob_time;
 }
-const location = (geo1) => {
+const location = (geo) => {
     // let geo = {"range":[2064646144,2064654335],"country":"VN","region":"AS","eu":"0","timezone":"Asia/Ho_Chi_Minh","city":"Hanoi","ll":[21.0333,105.85],"metro":0,"area":1}
     let location;
     if (geo["country"] == "VN") location  = geo.city;
