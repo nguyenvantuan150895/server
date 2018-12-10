@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Enterprise Home Page</title>
+  <link rel="icon" type="image/png" href="/iconLogo.jpeg" />
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -171,7 +172,9 @@
         <!-- mini logo for sidebar mini 50x50 pixels -->
         <span class="logo-mini"><b>A</b>LT</span>
         <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg"><b>Rutgon</b>.com</span>
+        <span class="logo-lg">
+          <b><%=domainH%></b><%=domainF%>
+      </span>
       </a>
       <!-- Header Navbar: style can be found in header.less -->
       <nav class="navbar navbar-static-top">
@@ -201,7 +204,7 @@
             <li class="dropdown user user-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <img src="/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-                <span class="hidden-xs">Nguyễn Văn Tuấn</span>
+                <span class="hidden-xs"><%=ob_user.username%></span>
               </a>
               <ul class="dropdown-menu">
                 <!-- User image -->
@@ -209,7 +212,7 @@
                   <img src="/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
 
                   <p>
-                    Nguyễn Văn Tuấn
+                    <%=ob_user.username%>
                     <small>Member since Nov. 2012</small>
                   </p>
                 </li>
@@ -254,7 +257,7 @@
             <img src="/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
           </div>
           <div class="pull-left info">
-            <p>Nguyễn Văn Tuấn</p>
+            <p><%=ob_user.username%></p>
             <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
           </div>
         </div>
@@ -297,11 +300,11 @@
           </li>
 
           <li>
-            <a href="layout/calendar.html">
+            <a href="/enterprise/calendar">
               <i class="fa fa-calendar"></i> <span>Calendar</span>
               <span class="pull-right-container">
-                <small class="label pull-right bg-red">3</small>
-                <small class="label pull-right bg-blue">17</small>
+                <!-- <small class="label pull-right bg-red">12</small>
+                <small class="label pull-right bg-blue">08</small> -->
               </span>
             </a>
           </li>
@@ -320,56 +323,6 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
       <!-- dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd -->
-      <!-- <div id="detail">
-        <div class="col-md-6">
-          <div class=block>
-            <label for="" style="color: white">Name:</label>
-            <input type="text" class="infoDetail" value="" readonly id="idname">
-          </div>
-          <div class="block">
-            <label for="" style="color: white">Url Origin:</label>
-            <input type="text" class="infoDetail" value="" readonly id="idOldUrl">
-          </div>
-          <div class="block">
-            <label for="" style="color: white;">Start Time (mm/dd/yy):</label>
-            <input type="text" class="infoDetail" value="" readonly id="start">
-          </div>
-          <div class="block">
-            <label for="" style="color: white;">End Time (mm/dd/yy):</label>
-            <input type="text" class="infoDetail" value="" readonly id="end">
-          </div>
-          <div class="block">
-            <label for="" style="color: white;">Time Create:</label>
-            <input type="text" class="infoDetail" value="" readonly id="create">
-          </div>
-
-        </div>
-        <div class="col-md-6">
-          <div class="block">
-            <label for="" style="color: white;">Url Email:</label>
-            <input type="text" class="infoDetail" readonly value="" id="email">
-          </div>
-          <div class="block">
-            <label for="" style="color: white;">Url SMS:</label>
-            <input type="text" class="infoDetail" readonly value="" id="sms">
-          </div>
-          <div class="block">
-            <label for="" style="color: white;">Url Other:</label>
-            <input type="text" class="infoDetail" readonly value="" id="other">
-          </div>
-          <label for="" style="color: white">Url Facebook:</label> <br>
-          <% for (let x = 0; x < 1 ;  x++) { %>
-          <div class="block block1">
-            <label for="" style="color: white; "> </label>
-            <input type="text" class="infoDetail" readonly value="">
-          </div>
-
-          <% } %>
-
-        </div>
-      </div> -->
-      <!-- <div id="sticky"> <button id="mybtn"> <i id="fa" class="fa fa-angle-double-down"></i> Campaign detail</button>
-      </div> -->
       <div id='slider' class="slider">
         <label for="" style="color: white">PASTE LONG URL</label>
         <br>
@@ -389,19 +342,17 @@
         <div class="col-md-2">
           <button style="height: 68px" class="btn btn-primary" id="btnok">OK</button>
         </div>
-        <label id="labelNotice" style="color:white; display: none;">Everything is almost finished, please point your
-          domain to the server
-          ip address provided below. Once completed you can access with the registered domain name!</label> <br>
-        <input type="text" id="idIpServer" autocomplete="off" readonly style="display: none"> <br> <br>
+        <label id="labelNotice" style="color:white; display: none;">A confirmation email has been sent to your email address. Please <a href="https://www.google.com/gmail/about/#">login</a> to confirm and follow the instructions. For any questions please contact: husthust1995@gmail.com. Thank you!</label> <br>
         <button class="btn btn-primary" id="idUnderstand" style="display: none"> I Understand</button>
+        
       </div>
 
       <!-- dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd -->
       <!-- Content Header (Page header) -->
       <section class="content-header">
         <h1>
-          Nguyen Van Tuan
-          <small>Preview sample</small>
+          Hello
+          <small><%=ob_user.username%></small>
         </h1>
       </section>
 
@@ -411,7 +362,7 @@
         <!-- Main content -->
         <section class="content">
           <div class="row">
-            <h1>Welcome Mode Enterpise!</h1>
+            <h1>Welcome To Mode Enterpise!</h1>
           </div>
           <!-- /.row -->
 
@@ -629,7 +580,6 @@
   <!-- Bootstrap 3.3.7 -->
   <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
   <!-- ChartJS -->
-
   <!-- FastClick -->
   <script src="/bower_components/fastclick/lib/fastclick.js"></script>
   <!-- AdminLTE App -->

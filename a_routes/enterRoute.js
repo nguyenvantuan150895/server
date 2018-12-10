@@ -20,6 +20,10 @@ router.get('/deleteLink/:id', enterControll.deleteLink);
 // router.get('/search',enterControll.search);
 router.post('/upgrade',enterControll.upgrade);
 router.get('/profile',enterControll.getProfile);
+router.get('/editEnter/:id',enterControll.editEnter_get);
+router.post('/editEnter',enterControll.editEnter_post);
+router.get('/calendar',enterControll.calendar);
+
 
 
 

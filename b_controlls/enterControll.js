@@ -23,17 +23,21 @@ let accessS_Pl;
 let accessO_Pl;
 // for manager campaign
 let obCampBefore;
+/*Domain head, foot*/
+let domainH, domainF;
+
 
 
 // Manager campaign
 exports.manager = async (req, res) => {
     // manager tro ve homeEnter.ejs
     let id_user = await User.getIdByUser(req.session.user);
+    let ob_user = await User.getObUserByName(req.session.user);
     let nameCamp = req.query.campaign;
     let valueSearch = "";
     let arr_campaign;
     try {
-        if(nameCamp == undefined) {
+        if (nameCamp == undefined) {
             arr_campaign = await Campaign.getAllCampaignByIDUser(id_user);
         } else {
             valueSearch = nameCamp;
@@ -42,33 +46,21 @@ exports.manager = async (req, res) => {
         }
         arr_campaign = seedUrl.removeCampaignNull(arr_campaign);
         arr_campaignPl = arr_campaign;//don't care
-        res.render("../d_views/enter/homeEnter.ejs", { arrCampaign: arr_campaign, valueSearch: valueSearch });
+        res.render("../d_views/enter/homeEnter.ejs", {
+            arrCampaign: arr_campaign, valueSearch: valueSearch,
+            ob_user: ob_user, domainH: domainH, domainF: domainF
+        });
     } catch (e) {
         console.log(e + "--tuan:manager in enter");
     }
 }
-
-// Search campaign
-// exports.search = async (req, res) => {
-//     try {
-//         let nameCamp = req.query.campaign;
-//         let idUser = await User.getIdByUser(req.session.user);
-//         let arr_campaign = await Campaign.searchCamp(idUser, nameCamp);
-//         // console.log("ArrCamp:", arrCamp);
-//         arr_campaignPl = arr_campaign;//don't care
-//         res.render("../d_views/enter/homeEnter.ejs", { arrCampaign: arr_campaign });
-//     } catch (e) {
-//         console.log(e + "--tuan: search in entercontroll");
-//     }
-// }
-
-
 
 // detail campaign
 exports.getDetailCamp = async (req, res) => {
     let id = req.params.id;
     let customer = {};
     try {
+        let ob_user = await User.getObUserByName(req.session.user);
         let ob_campaign = await Campaign.getCampaignById(id); ob_campaignPl = ob_campaign;
         let start_time = ob_campaign.start_time; let end_time = ob_campaign.end_time;
         end_time = AccessModul.returnEndTime(end_time);
@@ -120,9 +112,12 @@ exports.getDetailCamp = async (req, res) => {
         customer.osPhone = objInfo.osPhone;
         customer.objLocation = objInfo.objLocation;
         // console.log("test:", JSON.stringify(customer));
-        let response = { arrCampaign: arr_campaignPl, obCamp: ob_campaign, customer: customer, 
-            valueSearch: valueSearchPl }
-        res.render('../d_views/enter/detailCampaign.ejs',response );
+        let response = {
+            arrCampaign: arr_campaignPl, obCamp: ob_campaign, customer: customer,
+            valueSearch: valueSearchPl, ob_user: ob_user, domainH: domainH, domainF: domainF
+        }
+        // console.log("customer:", JSON.stringify(customer));
+        res.render('../d_views/enter/detailCampaign.ejs', response);
 
     } catch (e) {
         console.log(e + "--tuan: getailCampain in EnterControll");
@@ -130,7 +125,11 @@ exports.getDetailCamp = async (req, res) => {
 }
 //Create campaign
 exports.createCampaign_get = async (req, res) => {
-    res.render("../d_views/enter/createCampaign.ejs", { arrCampaign: arr_campaignPl , valueSearch: valueSearchPl});
+    let ob_user = await User.getObUserByName(req.session.user);
+    res.render("../d_views/enter/createCampaign.ejs", {
+        arrCampaign: arr_campaignPl,
+        valueSearch: valueSearchPl, ob_user: ob_user, domainH: domainH, domainF: domainF
+    });
 }
 exports.createCampaign_post = async (req, res) => {
     let data = req.body;
@@ -139,6 +138,7 @@ exports.createCampaign_post = async (req, res) => {
     let email = seedUrl.createShortUrl(domain);
     let other = seedUrl.createShortUrl(domain);
     let fb = [];
+    let ob_user = await User.getObUserByName(req.session.user);
 
     if (typeof data.faceGroup == "object") {
         for (let i = 0; i < (data.faceGroup).length; i++) {
@@ -154,7 +154,10 @@ exports.createCampaign_post = async (req, res) => {
         sms: sms, email: email, other: other, fb: fb, start: data.start, end: data.end
     }
     // console.log("customer:", customer);
-    res.render('../d_views/enter/confirm.ejs', { customer: customer, arrCampaign: arr_campaignPl, valueSearch: valueSearchPl });
+    res.render('../d_views/enter/confirm.ejs', {
+        customer: customer, arrCampaign: arr_campaignPl,
+        valueSearch: valueSearchPl, ob_user: ob_user, domainH: domainH, domainF: domainF
+    });
 }
 // Confirm campaign
 exports.confirm_post = async (req, res) => {
@@ -186,6 +189,7 @@ exports.editCamp_get = async (req, res) => {
     idCamp = req.params.id;
     try {
         let ob_camp = await Campaign.getObCampById(idCamp);
+        let ob_user = await User.getObUserByName(req.session.user);
         //chuan hoa
         let standar = await CampaignModul.standardizedCampaign([ob_camp]);
         ob_camp = standar[0];
@@ -220,7 +224,10 @@ exports.editCamp_get = async (req, res) => {
         }
         obCampBefore = customer; //don't care
         // console.log("Send:",customer);
-        res.render('../d_views/enter/editCamp.ejs', { customer: customer, arrCampaign: arr_campaignPl , valueSearch: valueSearchPl});
+        res.render('../d_views/enter/editCamp.ejs', {
+            customer: customer, arrCampaign: arr_campaignPl,
+            valueSearch: valueSearchPl, ob_user: ob_user, domainH: domainH, domainF: domainF
+        });
     } catch (e) {
         console.log(e + "--tuan: editCamp_get enterControll");
     }
@@ -355,6 +362,7 @@ exports.showHistory = async (req, res) => {
     let arr_link = [];
     let totalLink = 0;
     try {
+        let ob_user = await User.getObUserByName(req.session.user);
         let id_user = await User.getIdByUser(req.session.user);
         let ob_campaign = await Campaign.getArrObUrl(id_user);
         if (ob_campaign != undefined) {
@@ -381,7 +389,10 @@ exports.showHistory = async (req, res) => {
             //console.log("arr_url:", arr_url[0]);
         }
         let data = { arr_short: arr_link, admin: 'ADMIN', page: pageHistory, totalLink: totalLink };
-        res.render('../d_views/enter/history.ejs', { data: data, arrCampaign: arr_campaignPl, valueSearch: valueSearchPl});
+        res.render('../d_views/enter/history.ejs', {
+            data: data, arrCampaign: arr_campaignPl,
+            valueSearch: valueSearchPl, ob_user: ob_user, domainH: domainH, domainF: domainF
+        });
     } catch (e) {
         console.log(e + "--tuan: error Manager");
     }
@@ -430,24 +441,99 @@ exports.deleteLink = async (req, res) => {
 // Upgrade premium
 exports.upgrade = async (req, res) => {
     try {
-        console.log("receive:", req.body);
-        let ipServer = fs.readFileSync('ipServer.txt', 'utf8');
-        ipServer = ipServer.trim();
-        // console.log("ipServer:", ipServer);
         let ob_user = await User.getObUserByName(req.session.user);
         let email = ob_user.email;
         let domain = req.body.domain; domain = domain.toString();
-        let command = "cd ~ && cd tool && sudo node index.js "+domain+" "+email;
+        let command = "cd ~ && cd tool && sudo node index.js " + domain + " " + email;
         cmd.run(command);
-        res.send({ipServer: ipServer});
+        res.send({ email: email });
     } catch (e) {
-        console.log(e + "--tuan: upgrade in entercontroll"); 
+        console.log(e + "--tuan: upgrade in entercontroll");
     }
 }
 // Profile
-exports.getProfile = (req, res) => {
-    res.render('../d_views/enter/profile.ejs', { arrCampaign: arr_campaignPl, valueSearch: valueSearchPl });
+exports.getProfile = async (req, res) => {
+    let ob_user = await User.getObUserByName(req.session.user);
+    res.render('../d_views/enter/profile.ejs', {
+        arrCampaign: arr_campaignPl, valueSearch: valueSearchPl,
+        ob_user: ob_user, domainH: domainH, domainF: domainF
+    });
 }
+// Edit Enter
+exports.editEnter_get = async (req, res) => {
+    let ob_user = await User.getObUserByName(req.session.user);
+    res.render('../d_views/enter/editEnter.ejs', {
+        arrCampaign: arr_campaignPl, valueSearch: valueSearchPl,
+        ob_user: ob_user, domainH: domainH, domainF: domainF
+    });
+}
+exports.editEnter_post = async (req, res) => {
+    // console.log("receive:", req.body);
+    let customer = {};
+    try {
+        let ob_user = await User.getObUserByName(req.session.user);
+        let username = req.body.username;
+        let email = req.body.email;
+        let password = req.body.password;
+        let checkUser = await User.checkExistUser(username);
+        let checkEmail = await User.checkExistEmail(email);
+        if (checkUser == true && username != ob_user.username) {
+            customer.state = 'fail';
+            customer.existUser = true;
+        }
+        else if (checkEmail == true && email != ob_user.email) {
+            customer.state = 'fail';
+            customer.existEmail = true;
+        }
+        else {
+            let obUpdate = { username: username, password: password, email: email };
+            let rs = await User.update(ob_user.id, obUpdate);
+            customer.state = 'ok';
+            req.session.user = username;
+        }
+        res.send(customer);
+    } catch (e) {
+        console.log(e + "--tuan: editEnter in enterControll");
+    }
+
+}
+// Calendar
+exports.calendar = async (req, res) => {
+    try {
+        let ob_user = await User.getObUserByName(req.session.user);
+        res.render("../d_views/enter/calendar.ejs", {
+            arrCampaign: arr_campaignPl, valueSearch: valueSearchPl,
+            ob_user: ob_user, domainH: domainH, domainF: domainF
+        });
+    } catch (e) {
+        console.log(e + "--tuan:calendar in enter");
+    }
+}
+
+/////////////
+let getDomain = () => {
+    let domain = fs.readFileSync('domain.txt', 'utf8');
+    domain = domain.trim();
+    let arr = domain.split(".");
+    if (arr.length == 3) {
+        domainH = arr[1];
+        domainF = arr[2];
+    } else {
+        domainH = arr[0];
+        domainF = arr[1];
+    }
+    domainH = standardDomainH(domainH);
+    domainF = "." + domainF.toString();
+}
+let standardDomainH = (domainH) => {
+    let letterFirst = domainH.slice(0, 1);
+    letterFirst = letterFirst.toUpperCase();
+    let stringRemain = domainH.slice(1, domainH.length);
+    let temp = letterFirst.toString() + stringRemain.toString();
+    return temp;
+}
+//get domain
+getDomain();
 
 
 

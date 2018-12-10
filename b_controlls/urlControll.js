@@ -5,6 +5,7 @@ const seedUrl = require('../public/modul/seedUrl');
 const accessModul = require('../public/modul/accessModul');
 const campaignModel = require('../c_models/campaignModel');
 const Access = require('../c_models/accesslogModel');
+const fs = require('fs');
 
 const requestIp = require('request-ip');
 const geoip = require('geoip-lite');
@@ -17,7 +18,9 @@ const useragent = require('useragent');
 
 //Handle get short URL
 exports.shortUrl_get = (req, res) => {
-    res.render('../d_views/url/shortenUrl.ejs');
+    let domain = fs.readFileSync('domain.txt', 'utf8');
+    domain = domain.trim();
+    res.render('../d_views/url/shortenUrl.ejs', {domain: domain});
 };
 //Handle post short Url
 exports.shortUrl_post = async (req, res) => { 
@@ -41,6 +44,8 @@ exports.shortUrl_post = async (req, res) => {
 exports.redirectUrlOrigin = async (req, res) => {
     // get shortUrl from address bar
     let urlShort =  req.get('host') + req.originalUrl;
+    let arr = urlShort.split('?');
+    urlShort = arr[0];
     try{
         const agent = useragent.parse(req.headers['user-agent']);
         let urlOrigin = await getUrlOrigin(urlShort);
@@ -97,7 +102,7 @@ let getUrlOrigin = async (shortUrl) => {
 //test
 exports.test = async (req, res) => {
     try{
-        let result = await accessModul.dummyData(30);
+        let result = await accessModul.dummyData(3000);
         // console.log("result:", result);
         res.send("Dummy done!");
     }catch(e){

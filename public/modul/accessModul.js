@@ -14,10 +14,12 @@ const date = () => {
     return ob_time;
 }
 const location = (geo1) => {
-    let geo = {"range":[2064646144,2064654335],"country":"VN","region":"AS","eu":"0","timezone":"Asia/Ho_Chi_Minh","city":"Hanoi","ll":[21.0333,105.85],"metro":0,"area":1}
+    // let geo = {"range":[2064646144,2064654335],"country":"VN","region":"AS","eu":"0","timezone":"Asia/Ho_Chi_Minh","city":"Hanoi","ll":[21.0333,105.85],"metro":0,"area":1}
     let location;
     if (geo["country"] == "VN") location  = geo.city;
-    else location = "foreign";
+    else location = "Nước Ngoài";
+    if(location == 'Hanoi') location = "Hà Nội";
+    if(location == 'Ho Chi Minh City') location = "TP HCM";
     return location;
 }
 const getOs = (info1) => {
