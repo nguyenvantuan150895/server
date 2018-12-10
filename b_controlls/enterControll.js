@@ -444,7 +444,7 @@ exports.upgrade = async (req, res) => {
         let ob_user = await User.getObUserByName(req.session.user);
         let email = ob_user.email;
         let domain = req.body.domain; domain = domain.toString();
-        let command = "cd ~ && cd tool && sudo node index.js " + domain + " " + email;
+        let command = "cd ~ && cd tool && echo vinadc@123457 | sudo -S node index.js " + domain + " " + email;
         cmd.run(command);
         res.send({ email: email });
     } catch (e) {
