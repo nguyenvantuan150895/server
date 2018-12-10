@@ -46,34 +46,44 @@ exports.redirectUrlOrigin = async (req, res) => {
     let urlShort =  req.get('host') + req.originalUrl;
     let arr = urlShort.split('?');
     urlShort = arr[0];
+    console.log("urlShort:", urlShort);
     try{
         const agent = useragent.parse(req.headers['user-agent']);
         let urlOrigin = await getUrlOrigin(urlShort);
+        console.log("urlOrigin:", urlOrigin);
         // get device
         let device = req.device.type; // desktop/phone/tablet
         if(device != 'desktop' && device != 'phone' && device != 'tablet') device = 'other';
+        console.log("device:", device);
         //get ip
-        let ip = req.clientIp; //console.log("Ip:", ip);
+        let ip = req.clientIp; 
+        console.log("Ip:", ip);
         //get location
         let geo = geoip.lookup(ip);// geo = JSON.stringify(geo);
-        let location = accessModul.location(geo); //console.log("Location:", location);
+        let location = accessModul.location(geo); 
+        console.log("Location:", location);
         //get timeClick
-        let time_click = accessModul.date(); //console.log("Time click:", time_click);
+        let time_click = accessModul.date(); 
+        console.log("Time click:", time_click);
         // get browser
-        let browser = accessModul.getBrowser(agent.family); //console.log("Browser:", browser);
+        let browser = accessModul.getBrowser(agent.family); 
+        console.log("Browser:", browser);
         //get OS
-        let os = accessModul.getOs(agent.toString()); //console.log("OS:", os);
+        let os = accessModul.getOs(agent.toString());  
         if(os == "Other"){
             if(device == 'phone' || device == "tablet" || device == "other") os = "Otherphone";
             else if(device == "desktop") os = "Otherdesktop";
         }
+        console.log("OS:", os);
         
         //get idShorten
         let ob_shorten = await shortenModel.getId(urlShort);
-        let id_shorten = ob_shorten.id; //console.log("id_shorten:", id_shorten);
+        let id_shorten = ob_shorten.id; 
+        console.log("id_shorten:", id_shorten);
         //Save accesslog
         let ob_access = {ip: ip, time_click: time_click,location: location, device: device, id_shorten:id_shorten, browser:browser, os:os }
         await Access.save(ob_access);
+        console.log("redirect");
         res.redirect(urlOrigin);
         
     }catch(e){
