@@ -445,7 +445,7 @@ exports.upgrade = async (req, res) => {
         let email = ob_user.email;
         let domain = req.body.domain; domain = domain.toString();
         let command = "cd ~ && cd tool && sudo node index.js " + domain + " " + email;
-        cmd.run(command);
+        //cmd.run(command);
         res.send({ email: email });
     } catch (e) {
         console.log(e + "--tuan: upgrade in entercontroll");
