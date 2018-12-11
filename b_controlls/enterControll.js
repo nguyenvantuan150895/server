@@ -319,33 +319,22 @@ exports.shortLink = async (req, res) => {
 
 }
 const addLink1 = async (oldUrl, newUrl, user) => {
-    // let data = {};
-    // data.urlOrigin = req.body.urlOrigin;
-    // let shortUrl = seedUrl.createShortUrl();
     try {
         let ob_shortUrl = await Shorten.save({ url: newUrl });
         // console.log("ob_shortUrl:", ob_shortUrl);
         let object_url = { url: oldUrl, short_urls: [ob_shortUrl.id] };
-        let result = await Url.save(object_url);
-        // console.log("Save url:", result);
-
-        //get id_user by user 
-        let id_user = await User.getIdByUser(user);//req.session.user
-        /* check campaign: if user already exist then choose campaign with campaign = null, 
-            else create new campaign with campaign = null */
-        let checkUser = await Campaign.checkUserExist(id_user);
-        //console.log("id_user:", id_user);
-        // console.log("checkUser:", checkUser);
-
-        if (checkUser) {
-            let temp = await Campaign.update(id_user, result.id);// result.id = id_url
-            // console.log("updateCampaign:", temp);
+        let ob_url = await Url.save(object_url);
+        // console.log("ob_url:", ob_url);
+        let id_user = await User.getIdByUser(user);
+        let ob_camp = await Campaign.getCampaignNull(id_user);
+        if (ob_camp.length > 0) {
+            ob_camp = ob_camp[0];
+            // console.log("ob_camp:", ob_camp);
+            let rs = await Campaign.addIdUrlInCamp(ob_camp.id, ob_url.id);
         } else {
-            let ob_campaign = { id_user: id_user, id_urls: [result.id] };
-            let temp2 = await Campaign.save(ob_campaign);
-            // console.log("create new campaign with name = null:", temp2);
+            let ob_campaign = { id_user: id_user, id_urls: [ob_url.id] };
+            await Campaign.save(ob_campaign);
         }
-        return true;
     } catch (e) {
         console.log(e + "--- Tuan: Error addLink1 in EnterControll");
     }
@@ -355,6 +344,7 @@ const addLink1 = async (oldUrl, newUrl, user) => {
 //history
 exports.showHistory = async (req, res) => {
     let page_size = 10;
+    let ob_campaign;
     pageHistory = req.params.page;
     // console.log("page_current:", page_current);
     let i = (pageHistory - 1) * page_size;
@@ -364,13 +354,17 @@ exports.showHistory = async (req, res) => {
     try {
         let ob_user = await User.getObUserByName(req.session.user);
         let id_user = await User.getIdByUser(req.session.user);
-        let ob_campaign = await Campaign.getArrObUrl(id_user);
+        ob_campaign = await Campaign.getCampaignNull(id_user);
+        if(ob_campaign.length > 0 ) ob_campaign = ob_campaign[0];
+        //console.log("ob_campaign:", ob_campaign);
         if (ob_campaign != undefined) {
             let arr_idUrl = ob_campaign.id_urls;
             if (arr_idUrl != undefined) {
                 totalLink = arr_idUrl.length;
+                //console.log("totalLink:", totalLink);
                 // totalRecord = totalLink; // don't care 
                 let limit = (limit1 > totalLink) ? totalLink : limit1;
+                //console.log("limit:", limit);
                 //Get 10 records(url & urlshort) per page
                 for (i; i < limit; i++) {
                     let result1 = await Url.getObUrlById(arr_idUrl[i]);
@@ -388,7 +382,8 @@ exports.showHistory = async (req, res) => {
             }
             //console.log("arr_url:", arr_url[0]);
         }
-        let data = { arr_short: arr_link, admin: 'ADMIN', page: pageHistory, totalLink: totalLink };
+        let data = { arr_short: arr_link,page: pageHistory, totalLink: totalLink };
+        ///console.log("Data:", data);
         res.render('../d_views/enter/history.ejs', {
             data: data, arrCampaign: arr_campaignPl,
             valueSearch: valueSearchPl, ob_user: ob_user, domainH: domainH, domainF: domainF
