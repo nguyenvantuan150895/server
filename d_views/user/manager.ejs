@@ -239,7 +239,7 @@
                                         <td><a href='<%= url[i].oldUrl %>' title="<%= url[i].oldUrl %>">
                                                 <%= url[i].oldUrl%></a></td>
                                         <% } %>
-                                        <td><a href='<%= url[i].newUrl%>' title="<%=url[i].newUrl%>" class="clickUrl"
+                                        <td><a href='<%= "/" + (url[i].newUrl).split("/")[1]%>' title="<%=url[i].newUrl%>" class="clickUrl"
                                                 target="_blank">
                                                 <%= url[i].newUrl%></a></td>
                                         <td>
