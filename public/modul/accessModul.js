@@ -867,7 +867,7 @@ let changeMonthToWord = (labelMonth) => {
         let d = labelMonth[i].split("/")[0];
         let m = labelMonth[i].split("/")[1];
         let y = labelMonth[i].split("/")[2];
-        if(m == 1) m = Jan;
+        if(m == 1) m = 'Jan';
         else if(m == 2) m = 'Feb';
         else if(m == 3) m = 'Mar';
         else if(m == 4) m = 'Apr';
