@@ -393,7 +393,7 @@
                                                 <%if((data.arr_short[i].urlOrigin).length > 50){ %>
                                                 <td>
                                                     <a href='<%= data.arr_short[i].urlOrigin %>' title='<%= data.arr_short[i].urlOrigin %>'>
-                                                        <%= (data.arr_short[i].urlOrigin).slice(0,35) +"..."%></a>
+                                                        <%=(data.arr_short[i].urlOrigin).slice(0,35) +"..."%></a>
                                                 </td>
                                                 <% } else { %>
                                                 <td>
@@ -402,7 +402,7 @@
                                                 </td>
                                                 <% } %>
                                                 <td>
-                                                    <a href='<%= data.arr_short[i].urlShort%>'>
+                                                    <a href='<%= "/" + data.arr_short[i].urlShort%>'>
                                                         <%= data.arr_short[i].urlShort%></a>
                                                 </td>
                                                 <td>
