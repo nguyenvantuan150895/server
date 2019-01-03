@@ -6,6 +6,12 @@ const useragent = require('useragent');
 const Shorten = require('../../c_models/shortenModel');
 const Access = require('../../c_models/accesslogModel');
 
+// bien toan cuc luu tru gia thong tin truy cap theo ngay cua tung moi truong
+// bien nay theo thu tu chua gia tri la mang fb, email, sms, other
+// let arrEnvironment = [];
+
+
+
 const date = () => {
     let now = new Date();
     let date = date1.format(now, 'MM/DD/YYYY');  
@@ -18,8 +24,8 @@ const location = (geo) => {
     let location;
     if (geo["country"] == "VN") location  = geo.city;
     else location = "Nước Ngoài";
-    if(location == 'Hanoi') location = "Hà Nội";
-    if(location == 'Ho Chi Minh City') location = "TP HCM";
+    // if(location == 'Hanoi') location = "Hà Nội";
+    // if(location == 'Ho Chi Minh City') location = "TP HCM";
     return location;
 }
 const getOs = (info1) => {
@@ -750,7 +756,7 @@ const getInfoChart = (arr) => {
         else if(arr[i].location == 'Cần Thơ') cTho++;
         else if(arr[i].location == 'Đà Nẵng') dNang++;
         else if(arr[i].location == 'Hải Phòng') hPhong++;
-        else if(arr[i].location == 'Hà Nội') hNoi++;
+        else if(arr[i].location == 'Hanoi') hNoi++;
         else if(arr[i].location == 'TP HCM') hcMinh++;
         else if(arr[i].location == 'Nước Ngoài') nNgoai++;
     }
@@ -783,6 +789,208 @@ let filterLocation = (objLocation) => {
     return objLocation;
 }
 
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2
+// Lay thong tin chi tiet truy cap theo ngay
+let getDetailAccessByDay = (arrF, arrE, arrS, arrO ,start, end) => {
+    let customer = {};
+    let labelMonth = [];
+    let allMonth = getAllMonth(start, end);
+    for (let n = 0; n < allMonth.length; n++) {
+        labelMonth.push(addDayForMonth(allMonth[n]));
+    }
+    // console.log("labelMonth:", labelMonth);
+    
+    // loai bo cac thang khong nam trong chien dich
+    
+    let objectF = getInfoAccessDayInMonth(arrF); objectF = removeMonth(objectF, start, end); 
+        // console.log("objectFb:", JSON.stringify(objectF));
+        //objectFb: [[26,22,23,33,31,27,17,25,25,24,22,21,35,22,41,27,20,26,36,22,23,32,18,23,29,20,27,20,28,21,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+    let objectE = getInfoAccessDayInMonth(arrE); objectE = removeMonth(objectE, start, end);
+    //  console.log("objectE:", JSON.stringify(objectE));
+    let objectS = getInfoAccessDayInMonth(arrS); objectS = removeMonth(objectS, start, end); 
+        // console.log("objectS:", JSON.stringify(objectS));
+    let objectO = getInfoAccessDayInMonth(arrO); objectO = removeMonth(objectO, start, end); 
+        // console.log("objectO:", JSON.stringify(objectO));
+
+    // let a = [[1,2,3,4,5,6,7,8,9,0,0,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,0], [1,2,3,4,5,6,7,0,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]];
+    // let b = [[1,2,3,4,5,6,7,8,9,0,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,0], [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]];
+    // let c = [[1,2,3,4,5,6,7,8,9,0,0,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,0], [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]];
+    // let d = [[1,2,3,4,5,6,7,8,9,0,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,0], [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]];
+    
+    // xoa bo cac ngay khong co luot truy cap
+    for(let i = 0; i < labelMonth.length; i++){
+        for(let j = 0; j < 31; j++){
+            if( objectF[i][j] == 0 && objectE[i][j] == 0 && objectS[i][j] == 0 && objectO[i][j] == 0 ){
+                labelMonth[i][j] = -1; objectF[i][j] = -1;
+                objectE[i][j] = -1;  objectS[i][j] = -1; objectO[i][j] = -1;
+            }
+        }
+    }
+    labelMonth = removeDayNull(labelMonth); labelMonth = concatArray(labelMonth);
+    labelMonth = changeMonthToWord(labelMonth);
+    objectF = removeDayNull(objectF); objectF = concatArray(objectF);
+    objectE = removeDayNull(objectE); objectE = concatArray(objectE);
+    objectS = removeDayNull(objectS); objectS = concatArray(objectS);
+    objectO = removeDayNull(objectO); objectO = concatArray(objectO);
+    
+    customer.labelMonth = labelMonth;
+    customer.arrF = objectF;
+    customer.arrE = objectE;
+    customer.arrS = objectS;
+    customer.arrO = objectO;
+    return customer;
+}
+// lay thong tin truy cap tung ngay cua tung thang
+let getInfoAccessDayInMonth = (arr) => {
+    let arr_month = classifyMonth(arr);
+    //console.log("arr:", arr);
+    let m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12;
+    m1 = InfoAccessInMonth(arr_month[0],"day");
+    m2 = InfoAccessInMonth(arr_month[1], "day");
+    m3 = InfoAccessInMonth(arr_month[2], "day");
+    m4 = InfoAccessInMonth(arr_month[3], "day");
+    m5 = InfoAccessInMonth(arr_month[4], "day");
+    m6 = InfoAccessInMonth(arr_month[5], "day");
+    m7 = InfoAccessInMonth(arr_month[6], "day");
+    m8 = InfoAccessInMonth(arr_month[7], "day");
+    m9 = InfoAccessInMonth(arr_month[8], "day");
+    m10 = InfoAccessInMonth(arr_month[9],"day");
+    m11 = InfoAccessInMonth(arr_month[10], "day");
+    m12 = InfoAccessInMonth(arr_month[11], "day");
+     //tao doi tuong de luu vao bien mang moi truong
+    let object = {m1:m1, m2:m2, m3:m3, m4:m4, m5:m5, m6:m6, m7:m7, m8:m8, m9:m9, m10:m10, m11:m11, m12:m12};
+    return object;
+}
+//thay doi thang tu so sang chu
+let changeMonthToWord = (labelMonth) => {
+    for(let i = 0; i < labelMonth.length; i ++) {
+        let d = labelMonth[i].split("/")[0];
+        let m = labelMonth[i].split("/")[1];
+        let y = labelMonth[i].split("/")[2];
+        if(m == 1) m = Jan;
+        else if(m == 2) m = 'Feb';
+        else if(m == 3) m = 'Mar';
+        else if(m == 4) m = 'Apr';
+        else if(m == 5) m = 'May';
+        else if(m == 6) m = 'June';
+        else if(m == 7) m = 'July';
+        else if(m == 8) m = 'Aug';
+        else if(m == 9) m = 'Sept';
+        else if(m == 10) m = 'Oct';
+        else if(m == 11) m = 'Nov';
+        else if(m == 12) m = 'Dec';
+        let date = d + '/' + m + '/' + y;
+        labelMonth[i] = date;
+    }
+    return labelMonth;
+}
+//gop mang
+let concatArray = (arr) => {
+    let arr1= [];
+    for (let i = 0; i < arr.length; i++) {
+        arr1 = arr1.concat(arr[i]);
+    }
+    return arr1;
+}
+// xoa cac ngay khong co luot truy cap nao
+let removeDayNull = (arr) => {
+    // arr = [[],[],...]; mang cac mang
+    let arr1 = [];
+    
+    for(let i = 0; i < arr.length; i++) {
+        let temp = [];
+        for(let j = 0; j < arr[i].length; j++){
+            if(arr[i][j] != -1) temp.push(arr[i][j]);
+        }
+        arr1.push(temp);
+    }
+    return arr1;
+}
+// loai bo cac thang khong co trong chien dich, va sap xep cac thang theo thu tu
+let removeMonth = (obMonth,start, end) => {
+    let month = getOnlyMonth(start, end);
+    let arr_month = [];
+    for(let i = 0; i < month.length; i++){
+        if(month[i] == 1) arr_month.push(obMonth.m1);
+        else if(month[i] == 2) arr_month.push(obMonth.m2);
+        else if(month[i] == 3) arr_month.push(obMonth.m3);
+        else if(month[i] == 4) arr_month.push(obMonth.m4);
+        else if(month[i] == 5) arr_month.push(obMonth.m5);
+        else if(month[i] == 6) arr_month.push(obMonth.m6);
+        else if(month[i] == 7) arr_month.push(obMonth.m7);
+        else if(month[i] == 8) arr_month.push(obMonth.m8);
+        else if(month[i] == 9) arr_month.push(obMonth.m9);
+        else if(month[i] == 10) arr_month.push(obMonth.m10);
+        else if(month[i] == 11) arr_month.push(obMonth.m11);
+        else if(month[i] == 12) arr_month.push(obMonth.m12);
+    }
+    return arr_month;
+}
+// Lay tat ca cac thang trong chien dich
+let getAllMonth = (start, end) => {
+    let label = [];
+    let day_s = returnDay(start); day_s = Number(day_s);
+    let month_s = returnMonth(start); month_s = Number(month_s);
+    let year_s = returnYear(start); year_s = Number(year_s);
+    let day_e = returnDay(end); day_e = Number(day_e);
+    let month_e = returnMonth(end); month_e = Number(month_e);
+    let year_e = returnYear(end); year_e = Number(year_e);
+    if(year_s == year_e) {
+        while(month_s <= month_e) {
+            label.push(month_s + '/' + year_s);
+            month_s++;
+        }
+    }
+    else if(year_s < year_e){
+        while (month_s <= 12) {
+            label.push(month_s + '/' + year_s);
+            month_s++;
+        }
+        month_s = 1;
+        while(month_s <= month_e) {
+            label.push(month_s + '/' + year_e);
+            month_s++;
+        }
+    }
+    return label;
+}
+// Them ngay vao tung thang
+let addDayForMonth = (date) => {
+    //example: date = 3/2018
+    let label = [];
+    for(let i = 1; i < 32; i++) {
+        label.push(i.toString() +'/'+ date);
+    }
+    return label;
+} 
+// chi lay ra cac thang
+let getOnlyMonth = (start, end) => {
+    let label = [];
+    let day_s = returnDay(start); day_s = Number(day_s);
+    let month_s = returnMonth(start); month_s = Number(month_s);
+    let year_s = returnYear(start); year_s = Number(year_s);
+    let day_e = returnDay(end); day_e = Number(day_e);
+    let month_e = returnMonth(end); month_e = Number(month_e);
+    let year_e = returnYear(end); year_e = Number(year_e);
+    if(year_s == year_e) {
+        while(month_s <= month_e) {
+            label.push(month_s);
+            month_s++;
+        }
+    }
+    else if(year_s < year_e){
+        while (month_s <= 12) {
+            label.push(month_s);
+            month_s++;
+        }
+        month_s = 1;
+        while(month_s <= month_e) {
+            label.push(month_s);
+            month_s++;
+        }
+    }
+    return label;
+}
 
 
 module.exports = {
@@ -799,5 +1007,6 @@ module.exports = {
     caculateAverageHour,
     returnEndTime,
     getInfoChart,
+    getDetailAccessByDay
     
 }

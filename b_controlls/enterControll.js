@@ -2,6 +2,7 @@ const User = require('../c_models/userModel');
 const Url = require('../c_models/urlModel');
 const Shorten = require('../c_models/shortenModel');
 const Campaign = require('../c_models/campaignModel');
+const Calendar = require('../c_models/calendarModel');
 const seedUrl = require('../public/modul/seedUrl');
 const CampaignModul = require('../public/modul/campaignModul');
 const ExportModul = require('../public/modul/exportModul');
@@ -89,11 +90,13 @@ exports.getDetailCamp = async (req, res) => {
         let averageDayS = await AccessModul.caculateAverageDay(arr_accessS1, start_time, end_time); //console.log("averageDayS:", JSON.stringify(averageDayS));
         let averageDayO = await AccessModul.caculateAverageDay(arr_accessO1, start_time, end_time); //console.log("averageDayO:", JSON.stringify(averageDayO));
         let averageGr = await AccessModul.caculateAverageHour(arr_accessGr1, start_time, end_time);
-        // console.log("AverageGr:", averageGr);
+
         //Get info chart (os, browser, device)
         let arrFilter = arr_accessF1.concat(arr_accessE1, arr_accessS1, arr_accessO1);
         let objInfo = AccessModul.getInfoChart(arrFilter);
-        //console.log("objInfo:", objInfo);
+
+        //Get detail click by day
+        let detailDay = await AccessModul.getDetailAccessByDay(arr_accessF1,arr_accessE1,arr_accessS1, arr_accessO1, start_time, end_time);
 
         customer.ob_url = ob_url;
         customer.arr_shortUrl = arr_shortUrlCV;
@@ -111,16 +114,21 @@ exports.getDetailCamp = async (req, res) => {
         customer.osDesktop = objInfo.osDesktop;
         customer.osPhone = objInfo.osPhone;
         customer.objLocation = objInfo.objLocation;
-        // console.log("test:", JSON.stringify(customer));
+        //detailDay 
+        customer.labelMonth = detailDay.labelMonth;
+        customer.arrF = detailDay.arrF;
+        customer.arrE = detailDay.arrE;
+        customer.arrS = detailDay.arrS;
+        customer.arrO = detailDay.arrO;
         let response = {
             arrCampaign: arr_campaignPl, obCamp: ob_campaign, customer: customer,
             valueSearch: valueSearchPl, ob_user: ob_user, domainH: domainH, domainF: domainF
         }
-        // console.log("customer:", JSON.stringify(customer));
+        console.log("customer:", JSON.stringify(customer.labelMonth));
         res.render('../d_views/enter/detailCampaign.ejs', response);
 
     } catch (e) {
-        console.log(e + "--tuan: getailCampain in EnterControll");
+        console.log(e + "--tuan: getdetailCampain in EnterControll");
     }
 }
 //Create campaign
@@ -355,7 +363,7 @@ exports.showHistory = async (req, res) => {
         let ob_user = await User.getObUserByName(req.session.user);
         let id_user = await User.getIdByUser(req.session.user);
         ob_campaign = await Campaign.getCampaignNull(id_user);
-        if(ob_campaign.length > 0 ) ob_campaign = ob_campaign[0];
+        if (ob_campaign.length > 0) ob_campaign = ob_campaign[0];
         //console.log("ob_campaign:", ob_campaign);
         if (ob_campaign != undefined) {
             let arr_idUrl = ob_campaign.id_urls;
@@ -382,7 +390,7 @@ exports.showHistory = async (req, res) => {
             }
             //console.log("arr_url:", arr_url[0]);
         }
-        let data = { arr_short: arr_link,page: pageHistory, totalLink: totalLink };
+        let data = { arr_short: arr_link, page: pageHistory, totalLink: totalLink };
         ///console.log("Data:", data);
         res.render('../d_views/enter/history.ejs', {
             data: data, arrCampaign: arr_campaignPl,
@@ -504,8 +512,35 @@ exports.calendar = async (req, res) => {
         console.log(e + "--tuan:calendar in enter");
     }
 }
+// api get all event calendar
+exports.getCalendar = async (req, res) => {
+    try {
+        let arrCalen = await Calendar.getAllRecord(req.session.user);
+        res.json(arrCalen);
+    } catch (e) {
+        console.log(e + "--tuan:getCalendar in enter");
+    }
+}
+//api add new event in calendar
+exports.addEventCalendar = async (req, res) => {
+    try {
 
-/////////////
+        req.body.username = req.session.user;
+        let rs = await Calendar.addEvent(req.body);
+        let arrCalen = await Calendar.getAllRecord(req.session.user);
+        res.json(arrCalen);
+    } catch (e) {
+        console.log(e + "--tuan:getCalendar in enter");
+    }
+}
+
+
+
+
+
+
+
+///////////// Suport function
 let getDomain = () => {
     let domain = fs.readFileSync('domain.txt', 'utf8');
     domain = domain.trim();
