@@ -27,6 +27,9 @@ router.get('/calendar',enterControll.calendar);
 
 router.get('/apiCalendar', enterControll.getCalendar);
 router.post('/apiCalendar', enterControll.addEventCalendar);
+router.put('/apiCalendar', enterControll.updateEventCalendar);
+router.delete('/apiCalendar', enterControll.deleteEventCalendar);
+
 
 
 

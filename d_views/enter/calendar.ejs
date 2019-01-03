@@ -181,7 +181,17 @@
    
    
 </style>
-
+<style>
+    .fc-content {
+		display:inline;
+	}
+  .fa-trash-o {
+    display:inline;
+    float:right;
+    padding-top: 3px;
+    cursor: pointer;
+  }
+</style>
 </head>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -707,8 +717,38 @@
                 },
                 //Random default events
                 events: "/enterprise/apiCalendar", // lấy data event từ api
-                editable: false,
+                editable: true,
+                eventDurationEditable: false,
                 droppable: false, // this allows things to be dropped onto the calendar !!!
+                eventDrop: function (event, delta, revertFunc) { //event sửa ngày sự kiện
+                    // alert(event.title + " was dropped on " + event.start.format()); // day la alert
+                    $.ajax({
+                        url: '/enterprise/apiCalendar',
+                        type: 'PUT',
+                        data: { id: event._id, start: event.start.format() }, //gui len server id va ngay da sua
+                        success: function () {
+                            //do sth...
+                        }
+                    });
+                },
+                eventRender: function (event, element) {
+                    element.append('<div class="fa fa-trash-o"></div>'); //them icon trash
+                    element.find(".fa-trash-o").click(function () {
+                        let a = confirm("Are you sure you want to delete?");
+                        if (a) {
+                            $('#calendar').fullCalendar('removeEvents', event._id); //xoa event
+                            $.ajax({
+                                url: '/enterprise/apiCalendar',
+                                type: 'DELETE',
+                                data: { id: event._id }, //gui len server id da xoa
+                                success: function () {
+                                    //do sth...
+                                }
+                            });
+                        }
+                    });
+                }
+
             })
 
 

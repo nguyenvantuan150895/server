@@ -37,3 +37,21 @@ module.exports.addEvent = (object) => {
         })
     })
 }
+// update event
+module.exports.update = (id, start) => {
+    return new Promise((resolve, reject) => {
+        calendar.updateOne({ _id: id }, {start: start}, (err, result) => {
+            if (err) reject(err);
+            else resolve(result);
+        })
+    })
+}
+// delete event
+module.exports.delete = (id) => {
+    return new Promise((resolve, reject) => {
+        calendar.deleteOne({ _id: id }, (err, result) => {
+            if (err) reject(err);
+            else resolve(result);
+        })
+    })
+}

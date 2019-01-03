@@ -530,10 +530,32 @@ exports.addEventCalendar = async (req, res) => {
         let arrCalen = await Calendar.getAllRecord(req.session.user);
         res.json(arrCalen);
     } catch (e) {
-        console.log(e + "--tuan:getCalendar in enter");
+        console.log(e + "--tuan:addEventCalendar in enter");
     }
 }
-
+//api update event in calendar
+exports.updateEventCalendar = async (req, res) => {
+    try {
+        let id = req.body.id;
+        let start = req.body.start;
+        let rs = await Calendar.update(id, start);
+        let arrCalen = await Calendar.getAllRecord(req.session.user);
+        res.json(arrCalen);
+    } catch (e) {
+        console.log(e + "--tuan:updateEventCalendar in enter");
+    }
+}
+// api delete event in calendar
+exports.deleteEventCalendar = async (req, res) => {
+    try {
+        let id = req.body.id;
+        let rs = await Calendar.delete(id);
+        let arrCalen = await Calendar.getAllRecord(req.session.user);
+        res.json(arrCalen);
+    } catch (e) {
+        console.log(e + "--tuan:deleteEventCalendar in enter");
+    }
+}
 
 
 
